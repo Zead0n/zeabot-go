@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/Zead0n/zeabot-go/commands"
 	"github.com/Zead0n/zeabot-go/zeabot"
@@ -16,7 +19,22 @@ func main() {
 
 	zeabot.Discord.Rest().SetGlobalCommands(zeabot.Discord.ApplicationID(), commands.Commands)
 
-	if err = zeabot.Discord.OpenGateway(context.TODO()); err != nil {
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		zeabot.Discord.Close(ctx)
+	}()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err = zeabot.Discord.OpenGateway(ctx); err != nil {
 		slog.Error("Failed connecting gateway", slog.Any("err", err))
+		os.Exit(-1)
 	}
+
+	slog.Info("Bot started")
+	s := make(chan os.Signal, 1)
+	signal.Notify(s, syscall.SIGINT, syscall.SIGTERM)
+	<-s
+	slog.Info("Bot shutting down")
 }

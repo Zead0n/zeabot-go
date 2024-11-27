@@ -1,7 +1,6 @@
 package zeabot
 
 import (
-	"context"
 	"log/slog"
 	"os"
 
@@ -39,11 +38,6 @@ func NewZeabot() *Zeabot {
 	)
 	if err != nil {
 		slog.Error("Error building bot", slog.Any("err", err))
-	}
-
-	client.Rest().SetGlobalCommands(client.ApplicationID(), commands.Commands)
-	if err = client.OpenGateway(context.TODO()); err != nil {
-		slog.Error("Failed connecting gateway", slog.Any("err", err))
 	}
 
 	return &Zeabot{
