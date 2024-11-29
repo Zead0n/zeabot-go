@@ -21,9 +21,9 @@ var (
 type LoopState int64
 
 const (
-	Off LoopState = iota
-	Track
-	Queue
+	LoopOff LoopState = iota
+	LoopTrack
+	LoopQueue
 )
 
 type Zeabot struct {
@@ -65,7 +65,7 @@ func NewZeabot() *Zeabot {
 		Name:     "zeabot",
 		Address:  "lavalink:2333",
 		Password: lavalinkPassword,
-		Secure:   false,
+		Secure:   true,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -75,5 +75,6 @@ func NewZeabot() *Zeabot {
 
 	zeabot.Discord = disgoClient
 	zeabot.Lavalink = lavalinkClient
+	zeabot.LoopState = LoopOff
 	return zeabot
 }
