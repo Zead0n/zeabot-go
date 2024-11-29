@@ -11,6 +11,7 @@ import (
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/disgolink/v3/disgolink"
+	"github.com/disgoorg/lavaqueue-plugin"
 )
 
 var (
@@ -18,18 +19,10 @@ var (
 	lavalinkPassword string = os.Getenv("LAVALINK_PASSWORD")
 )
 
-type LoopState int64
-
-const (
-	LoopOff LoopState = iota
-	LoopTrack
-	LoopQueue
-)
-
 type Zeabot struct {
 	Discord   bot.Client
 	Lavalink  disgolink.Client
-	LoopState LoopState
+	LoopState lavaqueue.QueueType
 }
 
 func NewZeabot() *Zeabot {
@@ -75,6 +68,6 @@ func NewZeabot() *Zeabot {
 
 	zeabot.Discord = disgoClient
 	zeabot.Lavalink = lavalinkClient
-	zeabot.LoopState = LoopOff
+	zeabot.LoopState = lavaqueue.QueueTypeNormal
 	return zeabot
 }
