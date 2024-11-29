@@ -57,17 +57,11 @@ func (data *botData) onPlay(event *handler.CommandEvent) error {
 	botVoiceState, ok := data.Discord.Caches().VoiceState(*event.GuildID(), event.ApplicationID())
 	if !ok {
 		if err := data.Discord.UpdateVoiceState(context.TODO(), *event.GuildID(), userVoiceState.ChannelID, false, false); err != nil {
-			return event.CreateMessage(discord.MessageCreate{
-				Content: "Error joininng voice channel",
-			})
+			return event.CreateMessage(response.CreateErr("Error joining channel", err))
 		}
-	} else {
+	} else if userVoiceState.ChannelID == botVoiceState.ChannelID {
 		// Check if the bot is already in another channel
-		if userVoiceState.ChannelID != botVoiceState.ChannelID {
-			return event.CreateMessage(discord.MessageCreate{
-				Content: "Already in another channel",
-			})
-		}
+		return event.CreateMessage(response.CreateWarn("Already in another channnel"))
 	}
 
 	if err := event.DeferCreateMessage(false); err != nil {
