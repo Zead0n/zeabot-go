@@ -65,7 +65,7 @@ func NewZeabot() *Zeabot {
 		Name:     "zeabot",
 		Address:  "lavalink:2333",
 		Password: lavalinkPassword,
-		Secure:   true,
+		Secure:   false,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
