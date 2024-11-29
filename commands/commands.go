@@ -1,19 +1,32 @@
 package commands
 
 import (
-	"github.com/disgoorg/disgo/bot"
+	"github.com/Zead0n/zeabot-go/zeabot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/handler"
 )
 
 var Commands = []discord.ApplicationCommandCreate{
 	ping,
+	join,
+	leave,
+	play,
+	queue,
 }
 
-func CommandListener() bot.ConfigOpt {
-	h := handler.New()
+type botData struct {
+	*zeabot.Zeabot
+}
 
-	h.Command("/ping", onPing)
+func CommandListener(z *zeabot.Zeabot) handler.Router {
+	cmds := &botData{z}
 
-	return bot.WithEventListeners(h)
+	handler := handler.New()
+	handler.Command("/ping", cmds.onPing)
+	handler.Command("/join", cmds.onJoin)
+	handler.Command("/leave", cmds.onLeave)
+	handler.Command("/play", cmds.onPlay)
+	handler.SlashCommand("/queue", cmds.onQueue)
+
+	return handler
 }

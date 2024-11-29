@@ -4,6 +4,8 @@ github.com/disgoorg/disgolink/v3 v3.0.3 h1:9eHV5lVAGtPzDHjp3IJJ5xdWcFEjc24VJZWsA
 github.com/disgoorg/disgolink/v3 v3.0.3/go.mod h1:34D/dfdfrj08fSjtdKSXYz1TsMcjrX2RKoSpdxG3lHo=
 github.com/disgoorg/json v1.2.0 h1:6e/j4BCfSHIvucG1cd7tJPAOp1RgnnMFSqkvZUtEd1Y=
 github.com/disgoorg/json v1.2.0/go.mod h1:BHDwdde0rpQFDVsRLKhma6Y7fTbQKub/zdGO5O9NqqA=
+github.com/disgoorg/lavaqueue-plugin v0.0.0-20240708001834-dafe3f63f5a0 h1:ZvHEx0WER8DWyJewm+mKMRi3omJAbpzIbWCLAyaiZ8Y=
+github.com/disgoorg/lavaqueue-plugin v0.0.0-20240708001834-dafe3f63f5a0/go.mod h1:pvlIraap6FdqFCOUEeeadAIGnapApELXXM/+z1rxD6c=
 github.com/disgoorg/snowflake/v2 v2.0.3 h1:3B+PpFjr7j4ad7oeJu4RlQ+nYOTadsKapJIzgvSI2Ro=
 github.com/disgoorg/snowflake/v2 v2.0.3/go.mod h1:W6r7NUA7DwfZLwr00km6G4UnZ0zcoLBRufhkFWgAc4c=
 github.com/gorilla/websocket v1.5.3 h1:saDtZ6Pbx/0u+bgYQ3q96pZgCzfhKXGPqt7kZ72aNNg=

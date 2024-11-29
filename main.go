@@ -18,6 +18,7 @@ func main() {
 	zeabot := zeabot.NewZeabot()
 
 	zeabot.Discord.Rest().SetGlobalCommands(zeabot.Discord.ApplicationID(), commands.Commands)
+	zeabot.Discord.AddEventListeners(commands.CommandListener(zeabot))
 
 	defer func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
