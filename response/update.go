@@ -42,7 +42,7 @@ func UpdateWarn(content string) discord.MessageUpdate {
 		Embeds: &[]discord.Embed{
 			{
 				Description: content,
-				Color:       SuccessColor,
+				Color:       WarnColor,
 			},
 		},
 	}
