@@ -139,7 +139,7 @@ func (data *botData) handleTracks(event *handler.CommandEvent, tracks ...lavalin
 			return err
 		}
 
-		player.Update(context.TODO(), lavalink.WithTrack(nextTrack))
+		player.Update(context.TODO(), lavalink.WithTrack(*nextTrack))
 	}
 
 	_, err := event.UpdateInteractionResponse(response.Update(queuedMessage))

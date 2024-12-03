@@ -25,12 +25,11 @@ func (data *botData) onSkip(
 
 	queue := data.Manager.Get(*event.GuildID())
 
-	nextTrack, ok := queue.Next()
-	if !ok {
-		event.CreateMessage(response.CreateWarn("No tracks left in queue"))
-	}
+	nextTrack, _ := queue.Next()
 
-	player.Update(context.TODO(), lavalink.WithTrack(nextTrack))
+	if err := player.Update(context.TODO(), lavalink.WithTrack(*nextTrack)); err != nil {
+		return event.CreateMessage(response.CreateErr("Error skipping track", err))
+	}
 
 	return event.CreateMessage(response.Create("Skipped current track"))
 }

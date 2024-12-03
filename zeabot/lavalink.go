@@ -15,7 +15,7 @@ func (z *Zeabot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEven
 
 	queue := z.Manager.Get(event.GuildID())
 	var (
-		nextTrack lavalink.Track
+		nextTrack *lavalink.Track
 		ok        bool
 	)
 
@@ -23,7 +23,7 @@ func (z *Zeabot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEven
 	case LoopOff:
 		nextTrack, ok = queue.Next()
 	case LoopTrack:
-		nextTrack = event.Track
+		nextTrack = &event.Track
 	case LoopQueue:
 		queue.Add(event.Track)
 		nextTrack, ok = queue.Next()
@@ -32,7 +32,7 @@ func (z *Zeabot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEven
 	if !ok {
 		return
 	}
-	if err := player.Update(context.TODO(), lavalink.WithTrack(nextTrack)); err != nil {
+	if err := player.Update(context.TODO(), lavalink.WithTrack(*nextTrack)); err != nil {
 		slog.Error("Failed to play next track", slog.Any("err", err))
 	}
 }
