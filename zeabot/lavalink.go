@@ -16,7 +16,7 @@ func (z *Zeabot) onTrackEnd(player disgolink.Player, event lavalink.TrackEndEven
 	queue := z.Manager.Get(event.GuildID())
 	var (
 		nextTrack *lavalink.Track
-		ok        bool
+		ok        bool = true
 	)
 
 	switch queue.Mode {
