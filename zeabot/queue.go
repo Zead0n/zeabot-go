@@ -1,18 +1,16 @@
 package zeabot
 
 import (
-	"sync"
-
 	"github.com/disgoorg/disgolink/v3/lavalink"
 	"github.com/disgoorg/snowflake/v2"
 )
 
-type LoopState int8
+type LoopState string
 
 const (
-	LoopOff LoopState = iota
-	LoopTrack
-	LoopQueue
+	LoopOff   LoopState = "Off"
+	LoopTrack LoopState = "Track"
+	LoopQueue LoopState = "Queue"
 )
 
 func (state LoopState) String() string {
@@ -74,18 +72,18 @@ func (q *Queue) Clear() {
 	q.Tracks = make([]lavalink.Track, 0)
 }
 
-func (q *Queue) SetLoop(stateString string) {
-	var loopState LoopState
-	switch stateString {
-	case "Off":
-		loopState = LoopOff
-	case "Track":
-		loopState = LoopTrack
-	case "Queue":
-		loopState = LoopQueue
-	default:
-		loopState = LoopOff
-	}
-
-	q.Mode = loopState
-}
+// func (q *Queue) SetLoop(stateString string) {
+// 	var loopState LoopState
+// 	switch stateString {
+// 	case "Off":
+// 		loopState = LoopOff
+// 	case "Track":
+// 		loopState = LoopTrack
+// 	case "Queue":
+// 		loopState = LoopQueue
+// 	default:
+// 		loopState = LoopOff
+// 	}
+//
+// 	q.Mode = loopState
+// }

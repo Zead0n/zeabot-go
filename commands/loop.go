@@ -18,15 +18,15 @@ var loop = discord.SlashCommandCreate{
 			Choices: []discord.ApplicationCommandOptionChoiceString{
 				{
 					Name:  "off",
-					Value: zeabot.LoopOff.String(),
+					Value: string(zeabot.LoopOff),
 				},
 				{
 					Name:  "track",
-					Value: zeabot.LoopTrack.String(),
+					Value: string(zeabot.LoopTrack),
 				},
 				{
 					Name:  "queue",
-					Value: zeabot.LoopQueue.String(),
+					Value: string(zeabot.LoopQueue),
 				},
 			},
 		},
@@ -42,9 +42,10 @@ func (data *botData) onLoop(
 		return event.CreateMessage(response.CreateWarn("No player exists"))
 	}
 
-	queueType := command.String("type")
+	queueType := zeabot.LoopState(command.String("type"))
 	queue := data.Manager.Get(*event.GuildID())
-	queue.SetLoop(queueType)
+
+	queue.Mode = queueType
 
 	return event.CreateMessage(response.Createf("Looping: %s", queueType))
 }
