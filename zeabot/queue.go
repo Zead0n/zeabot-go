@@ -71,19 +71,3 @@ func (q *Queue) Next() (*lavalink.Track, bool) {
 func (q *Queue) Clear() {
 	q.Tracks = make([]lavalink.Track, 0)
 }
-
-// func (q *Queue) SetLoop(stateString string) {
-// 	var loopState LoopState
-// 	switch stateString {
-// 	case "Off":
-// 		loopState = LoopOff
-// 	case "Track":
-// 		loopState = LoopTrack
-// 	case "Queue":
-// 		loopState = LoopQueue
-// 	default:
-// 		loopState = LoopOff
-// 	}
-//
-// 	q.Mode = loopState
-// }
