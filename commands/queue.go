@@ -23,7 +23,7 @@ func (data *botData) onQueue(
 	}
 
 	queue := data.Manager.Get(*event.GuildID())
-	if len(queue.Tracks) <= 0 {
+	if len(queue.Tracks) <= 0 && player.Track() == nil {
 		return event.CreateMessage(response.Create("Nothing in the queue"))
 	}
 
