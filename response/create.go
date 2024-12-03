@@ -36,7 +36,6 @@ func CreateSuccess(content string) discord.MessageCreate {
 				Color:       SuccessColor,
 			},
 		},
-		Flags: discord.MessageFlagEphemeral,
 	}
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-	"strings"
 	"time"
 
 	"github.com/Zead0n/zeabot-go/response"
@@ -12,8 +11,6 @@ import (
 	"github.com/disgoorg/disgo/handler"
 	"github.com/disgoorg/disgolink/v3/disgolink"
 	"github.com/disgoorg/disgolink/v3/lavalink"
-	"github.com/disgoorg/json"
-	"github.com/disgoorg/lavaqueue-plugin"
 )
 
 var (
@@ -51,12 +48,13 @@ func (data *botData) onPlay(event *handler.CommandEvent) error {
 	if !ok {
 		return event.CreateMessage(discord.MessageCreate{
 			Content: "Be in a voice channel",
+			Flags:   discord.MessageFlagEphemeral,
 		})
 	}
 
 	botVoiceState, ok := data.Discord.Caches().VoiceState(*event.GuildID(), event.ApplicationID())
 	if !ok {
-		if err := data.Discord.UpdateVoiceState(context.TODO(), *event.GuildID(), userVoiceState.ChannelID, false, false); err != nil {
+		if err := data.Discord.UpdateVoiceState(context.TODO(), *event.GuildID(), userVoiceState.ChannelID, false, true); err != nil {
 			return event.CreateMessage(response.CreateErr("Error joining channel", err))
 		}
 	} else if userVoiceState.ChannelID == botVoiceState.ChannelID {
@@ -112,41 +110,45 @@ func (data *botData) onPlay(event *handler.CommandEvent) error {
 }
 
 func (data *botData) handleTracks(event *handler.CommandEvent, tracks ...lavalink.Track) error {
+	var trackLimit []lavalink.Track
 	if len(tracks) <= 0 {
-		event.UpdateInteractionResponse(response.UpdateWarn("No tracks to queue"))
-		return nil
+		_, err := event.UpdateInteractionResponse(response.UpdateWarn("No tracks to queue"))
+		return err
+	} else if len(tracks) < 10 {
+		trackLimit = tracks[:]
+	} else if len(tracks) >= 10 { // NOTE: Limits the max loading to 10
+		trackLimit = tracks[:10]
 	}
 
-	queueTracks := make([]lavaqueue.QueueTrack, len(tracks))
-	var queuedMessage []string
+	var queuedMessage string
 
-	for i, track := range tracks {
-		queuedMessage = append(
-			queuedMessage,
-			fmt.Sprintf(
-				"Added to queue: [%s - %s](<%s>)",
-				track.Info.Author,
-				track.Info.Title,
-				*track.Info.URI,
-			),
-		)
-
-		queueTracks[i] = lavaqueue.QueueTrack{
-			Encoded:  track.Encoded,
-			UserData: nil,
-		}
+	for _, track := range trackLimit {
+		queuedMessage += fmt.Sprintf("Added to queue: %s\n", response.FormatTrack(&track))
 	}
 
 	player := data.Lavalink.Player(*event.GuildID())
-	_, err := lavaqueue.AddQueueTracks(event.Ctx, player.Node(), *event.GuildID(), queueTracks)
+	queue := data.Manager.Get(*event.GuildID())
+
+	queue.Add(trackLimit...)
+	if player.Track() == nil && len(queue.Tracks) > 0 {
+		nextTrack, ok := queue.Next()
+		if !ok {
+			_, err := event.UpdateInteractionResponse(
+				response.UpdateError("No tracks, even though just added"),
+			)
+			return err
+		}
+
+		player.Update(context.TODO(), lavalink.WithTrack(nextTrack))
+	}
+
+	_, err := event.UpdateInteractionResponse(response.Update(queuedMessage))
 	if err != nil {
-		_, err = event.UpdateInteractionResponse(response.UpdateErr("Error queuing", err))
+		_, err = event.UpdateInteractionResponse(
+			response.UpdateErr("Queued song, but message failed", err),
+		)
 		return err
 	}
 
-	_, err = event.UpdateInteractionResponse(discord.MessageUpdate{
-		Content: json.Ptr(strings.Join(queuedMessage, "\n")),
-	})
-
-	return err
+	return nil
 }

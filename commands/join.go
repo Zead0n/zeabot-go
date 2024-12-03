@@ -17,6 +17,7 @@ func (data *botData) onJoin(event *handler.CommandEvent) error {
 	if !ok {
 		return event.CreateMessage(discord.MessageCreate{
 			Content: "Be in a voice channel",
+			Flags:   discord.MessageFlagEphemeral,
 		})
 	}
 

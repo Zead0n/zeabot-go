@@ -6,7 +6,6 @@ import (
 	"github.com/Zead0n/zeabot-go/response"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/handler"
-	"github.com/disgoorg/lavaqueue-plugin"
 )
 
 var queue = discord.SlashCommandCreate{
@@ -19,11 +18,11 @@ func (data *botData) onQueue(
 	event *handler.CommandEvent,
 ) error {
 	player := data.Lavalink.Player(*event.GuildID())
-	queue, err := lavaqueue.GetQueue(event.Ctx, player.Node(), *event.GuildID())
-	if err != nil {
-		event.CreateMessage(response.CreateErr("Failed to get queue", err))
+	if player == nil {
+		return event.CreateMessage(response.CreateError("No player"))
 	}
 
+	queue := data.Manager.Get(*event.GuildID())
 	if len(queue.Tracks) <= 0 {
 		return event.CreateMessage(response.Create("Nothing in the queue"))
 	}

@@ -7,11 +7,13 @@ import (
 )
 
 var Commands = []discord.ApplicationCommandCreate{
-	ping,
 	join,
 	leave,
+	loop,
+	ping,
 	play,
 	queue,
+	skip,
 }
 
 type botData struct {
@@ -22,11 +24,13 @@ func CommandListener(z *zeabot.Zeabot) handler.Router {
 	cmds := &botData{z}
 
 	handler := handler.New()
-	handler.Command("/ping", cmds.onPing)
 	handler.Command("/join", cmds.onJoin)
 	handler.Command("/leave", cmds.onLeave)
+	handler.SlashCommand("/loop", cmds.onLoop)
+	handler.Command("/ping", cmds.onPing)
 	handler.Command("/play", cmds.onPlay)
 	handler.SlashCommand("/queue", cmds.onQueue)
+	handler.SlashCommand("/skip", cmds.onSkip)
 
 	return handler
 }

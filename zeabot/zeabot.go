@@ -11,7 +11,7 @@ import (
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/disgolink/v3/disgolink"
-	"github.com/disgoorg/lavaqueue-plugin"
+	"github.com/disgoorg/snowflake/v2"
 )
 
 var (
@@ -20,9 +20,9 @@ var (
 )
 
 type Zeabot struct {
-	Discord   bot.Client
-	Lavalink  disgolink.Client
-	LoopState lavaqueue.QueueType
+	Discord  bot.Client
+	Lavalink disgolink.Client
+	Manager  *QueueManager
 }
 
 func NewZeabot() *Zeabot {
@@ -53,7 +53,10 @@ func NewZeabot() *Zeabot {
 		slog.Error("Error building bot", slog.Any("err", err))
 	}
 
-	lavalinkClient := disgolink.New(disgoClient.ApplicationID())
+	lavalinkClient := disgolink.New(
+		disgoClient.ApplicationID(),
+		disgolink.WithListenerFunc(zeabot.onTrackEnd),
+	)
 	node := disgolink.NodeConfig{
 		Name:     "zeabot",
 		Address:  "lavalink:2333",
@@ -68,6 +71,8 @@ func NewZeabot() *Zeabot {
 
 	zeabot.Discord = disgoClient
 	zeabot.Lavalink = lavalinkClient
-	zeabot.LoopState = lavaqueue.QueueTypeNormal
+	zeabot.Manager = &QueueManager{
+		queues: make(map[snowflake.ID]*Queue),
+	}
 	return zeabot
 }
