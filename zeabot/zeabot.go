@@ -59,12 +59,12 @@ func NewZeabot() *Zeabot {
 	)
 	node := disgolink.NodeConfig{
 		Name:     "zeabot",
-		Address:  "lavalink:2333",
-		Password: lavalinkPassword,
+		Address:  "127.0.0.1:2333",
+		Password: "youshallnotpass",
 		Secure:   false,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
 	lavalinkClient.AddNode(ctx, node)
