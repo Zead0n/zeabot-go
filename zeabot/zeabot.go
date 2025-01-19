@@ -2,6 +2,7 @@ package zeabot
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 	"time"
@@ -16,6 +17,8 @@ import (
 
 var (
 	discordToken     string = os.Getenv("DISCORD_TOKEN")
+	lavalinkHost     string = os.Getenv("LAVALINK_HOST")
+	lavalinkPort     string = os.Getenv("LAVALINK_PORT")
 	lavalinkPassword string = os.Getenv("LAVALINK_PASSWORD")
 )
 
@@ -59,7 +62,7 @@ func NewZeabot() *Zeabot {
 	)
 	node := disgolink.NodeConfig{
 		Name:     "zeabot",
-		Address:  "lavalink:2333",
+		Address:  fmt.Sprintf("%s:%s", lavalinkHost, lavalinkPort),
 		Password: lavalinkPassword,
 		Secure:   false,
 	}
