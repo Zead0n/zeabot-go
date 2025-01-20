@@ -101,5 +101,8 @@ func (q *Queue) GetTracks() []lavalink.Track {
 }
 
 func (q *Queue) Clear() {
+	q.mu.Lock()
+	defer q.mu.Unlock()
+
 	q.Tracks = make([]lavalink.Track, 0)
 }
