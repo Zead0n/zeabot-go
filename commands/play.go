@@ -43,7 +43,10 @@ var play = discord.SlashCommandCreate{
 	},
 }
 
-func (data *botData) onPlay(event *handler.CommandEvent) error {
+func (data *botData) onPlay(
+	command discord.SlashCommandInteractionData,
+	event *handler.CommandEvent,
+) error {
 	userVoiceState, ok := data.Discord.Caches().VoiceState(*event.GuildID(), event.User().ID)
 	if !ok {
 		return event.CreateMessage(discord.MessageCreate{
@@ -66,9 +69,9 @@ func (data *botData) onPlay(event *handler.CommandEvent) error {
 		return err
 	}
 
-	query := event.SlashCommandInteractionData().String("query")
+	query := command.String("query")
 	if !urlPattern.MatchString(query) && !searchPattern.MatchString(query) {
-		if source, ok := event.SlashCommandInteractionData().OptString("source"); ok {
+		if source, ok := command.OptString("source"); ok {
 			query = lavalink.SearchType(source).Apply(query)
 		} else {
 			query = lavalink.SearchTypeYouTube.Apply(query)
