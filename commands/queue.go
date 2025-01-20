@@ -23,11 +23,13 @@ func (data *botData) onQueue(
 	}
 
 	queue := data.Manager.Get(*event.GuildID())
-	if len(queue.Tracks) <= 0 && player.Track() == nil {
+	queuedTracks := queue.GetTracks()
+
+	if len(queuedTracks) <= 0 && player.Track() == nil {
 		return event.CreateMessage(response.Create("Nothing in the queue"))
 	}
 
-	content := fmt.Sprintf("Queue(%d):\n", len(queue.Tracks))
+	content := fmt.Sprintf("Queue(%d):\n", len(queuedTracks))
 	currentTrack := player.Track()
 	content += fmt.Sprintf(
 		"Now playing: %s\n%s / %s\n\n",
@@ -36,7 +38,7 @@ func (data *botData) onQueue(
 		currentTrack.Info.Length.String(),
 	)
 
-	for i, track := range queue.Tracks {
+	for i, track := range queuedTracks {
 		line := fmt.Sprintf(
 			"%d. [%s - %s](<%s>)\n",
 			i+1,
