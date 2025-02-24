@@ -10,6 +10,9 @@ var ping = discord.SlashCommandCreate{
 	Description: "pong",
 }
 
-func (d *botData) onPing(e *handler.CommandEvent) error {
+func (d *botData) onPing(
+	command discord.SlashCommandInteractionData,
+	e *handler.CommandEvent,
+) error {
 	return e.CreateMessage(discord.NewMessageCreateBuilder().SetContent("pong").Build())
 }

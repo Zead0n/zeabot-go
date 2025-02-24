@@ -12,7 +12,10 @@ var join = discord.SlashCommandCreate{
 	Description: "Join the voice channel you're in.",
 }
 
-func (data *botData) onJoin(event *handler.CommandEvent) error {
+func (data *botData) onJoin(
+	command discord.SlashCommandInteractionData,
+	event *handler.CommandEvent,
+) error {
 	voiceState, ok := data.Discord.Caches().VoiceState(*event.GuildID(), event.User().ID)
 	if !ok {
 		return event.CreateMessage(discord.MessageCreate{

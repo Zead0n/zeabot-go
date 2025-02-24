@@ -14,7 +14,10 @@ var leave = discord.SlashCommandCreate{
 	Description: "Leave voice channel",
 }
 
-func (data *botData) onLeave(event *handler.CommandEvent) error {
+func (data *botData) onLeave(
+	command discord.SlashCommandInteractionData,
+	event *handler.CommandEvent,
+) error {
 	data.Lavalink.RemovePlayer(*event.GuildID())
 
 	queue := data.Manager.Get(*event.GuildID())

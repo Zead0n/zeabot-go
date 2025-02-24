@@ -1,45 +1,10 @@
 FROM golang:1.22.2-alpine AS build
 WORKDIR /build
-RUN mkdir /bot
-COPY . .
-# COPY go.mod go.sum ./
+COPY go.mod go.sum ./
 RUN go mod download
-# COPY *.go ./
-RUN go build -o /bot/zeabot
+COPY . ./
+RUN go build -o /zeabot
 
-FROM fredboat/lavalink:4.0.8-alpine
-
-ENV SERVER_PORT=2333
-ENV SERVER_ADDRESS=127.0.0.1
-ENV SERVER_HTTP2_ENABLED=false
-
-ENV PLUGINS_YOUTUBE_ENABLED=true
-ENV PLUGINS_YOUTUBE_ALLOWSEARCH=true
-ENV PLUGINS_YOUTUBE_CLIENTS_0=MUSIC
-ENV PLUGINS_YOUTUBE_CLIENTS_1=TVHTML5EMBEDDED
-ENV PLUGINS_YOUTUBE_CLIENTS_2=ANDROID_MUSIC
-ENV PLUGINS_YOUTUBE_CLIENTS_3=ANDROID_TESTSUITE
-ENV PLUGINS_YOUTUBE_CLIENTS_4=WEB
-ENV PLUGINS_YOUTUBE_CLIENTS_5=WEBEMBEDDED
-ENV PLUGINS_YOUTUBE_CLIENTS_6=ANDROID
-ENV PLUGINS_YOUTUBE_CLIENTS_7=ANDROID_LITE
-ENV PLUGINS_YOUTUBE_CLIENTS_8=MEDIA_CONNECT
-ENV PLUGINS_YOUTUBE_CLIENTS_9=IOS
-
-ENV LAVALINK_PLUGINS_DIR=/opt/Lavalink/plugins
-ENV LAVALINK_DEFAULT_REPOSITORY=https://maven.lavalink.dev/releases
-ENV LAVALINK_PLUGINS_0_DEPENDENCY=dev.lavalink.youtube:youtube-plugin:1.11.1
-ENV LAVALINK_PLUGINS_0_SNAPSHOT=false
-
-ENV LAVALINK_SERVER_PASSWORD="youshallnotpass"
-ENV LAVALINK_SERVER_SOURCES_YOUTUBE=false
-
-USER root
-WORKDIR /bot
-COPY start.sh /bin
-RUN chmod +x /bin/start.sh
-COPY --from=build /bot/zeabot .
-
-ENTRYPOINT [ "/bin/start.sh" ]
-# CMD [ "java", "-Djdk.tls.client.protocols=TLSv1.1,TLSv1.2", "-jar", "/opt/Lavalink/Lavalink.jar" ]
-# ENTRYPOINT [ "./zeabot" ]
+FROM alpine:latest
+COPY --from=build /zeabot .
+ENTRYPOINT [ "./zeabot" ]
