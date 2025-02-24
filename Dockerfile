@@ -1,11 +1,11 @@
 FROM golang:1.22.2-alpine AS build
 WORKDIR /build
-RUN mkdir /bot
-COPY . .
+COPY go.mod go.sum ./
 RUN go mod download
-RUN go build -o /bot/zeabot
+COPY . ./
+RUN go build -o /zeabot
 
 FROM alpine:latest
 WORKDIR /bot
-COPY --from=build /bot/zeabot .
+COPY --from=build /zeabot .
 ENTRYPOINT [ "./zeabot" ]
