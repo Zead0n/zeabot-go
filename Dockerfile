@@ -6,5 +6,6 @@ COPY . ./
 RUN go build -o /zeabot
 
 FROM alpine:latest
+WORKDIR /bot
 COPY --from=build /zeabot .
 ENTRYPOINT [ "./zeabot" ]
