@@ -1,7 +1,7 @@
 package zeabot
 
 import (
-	"sync"
+	// "sync"
 
 	"github.com/disgoorg/disgolink/v3/lavalink"
 	"github.com/disgoorg/snowflake/v2"
@@ -29,13 +29,13 @@ func (state LoopState) String() string {
 }
 
 type QueueManager struct {
-	mu     sync.RWMutex
+	// mu     sync.RWMutex
 	queues map[snowflake.ID]*Queue
 }
 
 func (qm *QueueManager) Get(guildID snowflake.ID) *Queue {
-	qm.mu.RLock()
-	defer qm.mu.RUnlock()
+	// qm.mu.RLock()
+	// defer qm.mu.RUnlock()
 
 	queue, ok := qm.queues[guildID]
 	if !ok {
@@ -44,8 +44,8 @@ func (qm *QueueManager) Get(guildID snowflake.ID) *Queue {
 			Mode:   LoopOff,
 		}
 
-		qm.mu.Lock()
-		defer qm.mu.Unlock()
+		// qm.mu.Lock()
+		// defer qm.mu.Unlock()
 
 		qm.queues[guildID] = queue
 	}
@@ -54,29 +54,29 @@ func (qm *QueueManager) Get(guildID snowflake.ID) *Queue {
 }
 
 func (qm *QueueManager) Delete(guildID snowflake.ID) {
-	qm.mu.Lock()
-	defer qm.mu.Unlock()
+	// qm.mu.Lock()
+	// defer qm.mu.Unlock()
 
 	delete(qm.queues, guildID)
 }
 
 type Queue struct {
-	mu        sync.RWMutex
+	// mu        sync.RWMutex
 	Tracks    []lavalink.Track
 	Mode      LoopState
 	ChannelID snowflake.ID
 }
 
 func (q *Queue) Add(tracks ...lavalink.Track) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+	// q.mu.Lock()
+	// defer q.mu.Unlock()
 
 	q.Tracks = append(q.Tracks, tracks...)
 }
 
 func (q *Queue) Next() (*lavalink.Track, bool) {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+	// q.mu.Lock()
+	// defer q.mu.Unlock()
 
 	if len(q.Tracks) <= 0 {
 		return &lavalink.Track{}, false
@@ -89,8 +89,8 @@ func (q *Queue) Next() (*lavalink.Track, bool) {
 }
 
 func (q *Queue) GetTracks() []lavalink.Track {
-	q.mu.RLock()
-	defer q.mu.RUnlock()
+	// q.mu.RLock()
+	// defer q.mu.RUnlock()
 
 	tracks := make([]lavalink.Track, 0, len(q.Tracks))
 	for _, track := range q.Tracks {
@@ -101,8 +101,8 @@ func (q *Queue) GetTracks() []lavalink.Track {
 }
 
 func (q *Queue) Clear() {
-	q.mu.Lock()
-	defer q.mu.Unlock()
+	// q.mu.Lock()
+	// defer q.mu.Unlock()
 
 	q.Tracks = make([]lavalink.Track, 0)
 }
