@@ -3,8 +3,6 @@ A recreation of [zeabot-rs](https://github.com/Zead0n/zeabot-rs) written in go.
 
 A Discord bot that uses [Disgo](https://github.com/DisgoOrg/disgo), [Disgolink](https://github.com/disgoorg/disgolink), and [Lavalink](https://github.com/lavalink-devs/Lavalink) to play audio from a youtube source (possibly others) in a voice chat.
 
----
-
 # How to use
 It is hightly recommended to run this with [docker compose](https://docs.docker.com/compose/) as it will run the bot and the Lavalink container together.
 
