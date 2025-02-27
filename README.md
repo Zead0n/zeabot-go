@@ -9,7 +9,7 @@ A Discord bot that uses [Disgo](https://github.com/DisgoOrg/disgo), [Disgolink](
 It is hightly recommended to run this with [docker compose](https://docs.docker.com/compose/) as it will run the bot and the Lavalink container together.
 
 Here is the basic `docker-compose.yml` contents:
-```docker
+```yaml
 services:
   bot:
     image: zead0n/zeabot-go:latest
