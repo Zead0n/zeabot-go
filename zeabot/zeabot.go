@@ -2,6 +2,7 @@ package zeabot
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -12,6 +13,7 @@ import (
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/gateway"
 	"github.com/disgoorg/disgolink/v3/disgolink"
+	"github.com/disgoorg/disgolink/v3/lavalink"
 	"github.com/disgoorg/snowflake/v2"
 )
 
@@ -77,5 +79,32 @@ func NewZeabot() *Zeabot {
 	zeabot.Manager = &QueueManager{
 		queues: make(map[snowflake.ID]*Queue),
 	}
+
 	return zeabot
+}
+
+func (z *Zeabot) AddTracks(guildId snowflake.ID, tracks ...lavalink.Track) error {
+	var trackLimit []lavalink.Track
+	if len(tracks) <= 0 {
+		return errors.New("No tracks to queue")
+	} else if len(tracks) < 10 {
+		trackLimit = tracks[:]
+	} else if len(tracks) >= 10 { // NOTE: Limits the max loading to 10
+		trackLimit = tracks[:10]
+	}
+
+	player := z.Lavalink.Player(guildId)
+	queue := z.Manager.Get(guildId)
+
+	queue.Add(trackLimit...)
+	if player.Track() == nil && len(queue.Tracks) > 0 {
+		nextTrack, ok := queue.Next()
+		if !ok {
+			return errors.New("Queued tracks but can't play")
+		}
+
+		player.Update(context.TODO(), lavalink.WithTrack(*nextTrack))
+	}
+
+	return nil
 }
