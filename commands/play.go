@@ -43,11 +43,11 @@ var play = discord.SlashCommandCreate{
 	},
 }
 
-func (data *botData) onPlay(
+func (b *botData) onPlay(
 	command discord.SlashCommandInteractionData,
 	event *handler.CommandEvent,
 ) error {
-	userVoiceState, ok := data.Discord.Caches().VoiceState(*event.GuildID(), event.User().ID)
+	userVoiceState, ok := b.Discord.Caches().VoiceState(*event.GuildID(), event.User().ID)
 	if !ok {
 		return event.CreateMessage(discord.MessageCreate{
 			Content: "Be in a voice channel",
@@ -55,13 +55,13 @@ func (data *botData) onPlay(
 		})
 	}
 
-	botVoiceState, ok := data.Discord.Caches().VoiceState(*event.GuildID(), event.ApplicationID())
+	botVoiceState, ok := b.Discord.Caches().VoiceState(*event.GuildID(), event.ApplicationID())
 	if !ok {
-		if err := data.Discord.UpdateVoiceState(context.TODO(), *event.GuildID(), userVoiceState.ChannelID, false, true); err != nil {
+		if err := b.Discord.UpdateVoiceState(context.TODO(), *event.GuildID(), userVoiceState.ChannelID, false, true); err != nil {
 			return event.CreateMessage(response.CreateErr("Error joining channel", err))
 		}
 	} else if userVoiceState.ChannelID == botVoiceState.ChannelID {
-		// Check if the bot is already in another channel
+		// Check if the b is already in another channel
 		return event.CreateMessage(response.CreateWarn("Already in another channnel"))
 	}
 
@@ -84,10 +84,10 @@ func (data *botData) onPlay(
 	var loadErr error
 	resultHandler := disgolink.NewResultHandler(
 		func(track lavalink.Track) {
-			loadErr = data.handleTracks(event, track)
+			loadErr = b.handleTracks(event, track)
 		},
 		func(playlist lavalink.Playlist) {
-			loadErr = data.handleTracks(event, playlist.Tracks...)
+			loadErr = b.handleTracks(event, playlist.Tracks...)
 		},
 		func(tracks []lavalink.Track) {
 			_, loadErr = event.UpdateInteractionResponse(
@@ -106,43 +106,31 @@ func (data *botData) onPlay(
 		},
 	)
 
-	player := data.Lavalink.Player(*event.GuildID())
+	player := b.Lavalink.Player(*event.GuildID())
 	player.Node().LoadTracksHandler(ctx, query, resultHandler)
 
 	return loadErr
 }
 
-func (data *botData) handleTracks(event *handler.CommandEvent, tracks ...lavalink.Track) error {
-	var trackLimit []lavalink.Track
-	if len(tracks) <= 0 {
-		_, err := event.UpdateInteractionResponse(response.UpdateWarn("No tracks to queue"))
-		return err
-	} else if len(tracks) < 10 {
-		trackLimit = tracks[:]
-	} else if len(tracks) >= 10 { // NOTE: Limits the max loading to 10
-		trackLimit = tracks[:10]
-	}
+func (b *botData) searchComponent(event *handler.CommandEvent, tracks ...lavalink.Track) error {
+	trackIndexComponent := discord.NewTextInput(
+		"trackIndex",
+		discord.TextInputStyleShort,
+		"Enter song number",
+	)
+
+	searchMessage := discord.NewMessageCreateBuilder().AddActionRow(trackIndexComponent)
+
+	event.Client().Rest().CreateMessage(event.Channel().ID(), searchMessage.Build())
+	return nil
+}
+
+func (b *botData) handleTracks(event *handler.CommandEvent, tracks ...lavalink.Track) error {
+	b.AddTracks(*event.GuildID(), tracks...)
 
 	var queuedMessage string
-
-	for _, track := range trackLimit {
+	for _, track := range tracks[1:min(len(tracks), 10)] {
 		queuedMessage += fmt.Sprintf("Added to queue: %s\n", response.FormatTrack(&track))
-	}
-
-	player := data.Lavalink.Player(*event.GuildID())
-	queue := data.Manager.Get(*event.GuildID())
-
-	queue.Add(trackLimit...)
-	if player.Track() == nil && len(queue.Tracks) > 0 {
-		nextTrack, ok := queue.Next()
-		if !ok {
-			_, err := event.UpdateInteractionResponse(
-				response.UpdateError("No tracks, even though just added"),
-			)
-			return err
-		}
-
-		player.Update(context.TODO(), lavalink.WithTrack(*nextTrack))
 	}
 
 	_, err := event.UpdateInteractionResponse(response.Update(queuedMessage))
