@@ -13,16 +13,16 @@ var queue = discord.SlashCommandCreate{
 	Description: "Show current queue",
 }
 
-func (data *botData) onQueue(
+func (bot *botData) onQueue(
 	command discord.SlashCommandInteractionData,
 	event *handler.CommandEvent,
 ) error {
-	player := data.Lavalink.Player(*event.GuildID())
+	player := bot.Lavalink.Player(*event.GuildID())
 	if player == nil {
 		return event.CreateMessage(response.CreateError("No player"))
 	}
 
-	queue := data.Manager.Get(*event.GuildID())
+	queue := bot.Manager.Get(*event.GuildID())
 	queuedTracks := queue.GetTracks()
 
 	if len(queuedTracks) <= 0 && player.Track() == nil {

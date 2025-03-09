@@ -33,17 +33,17 @@ var loop = discord.SlashCommandCreate{
 	},
 }
 
-func (data *botData) onLoop(
+func (bot *botData) onLoop(
 	command discord.SlashCommandInteractionData,
 	event *handler.CommandEvent,
 ) error {
-	player := data.Lavalink.ExistingPlayer(*event.GuildID())
+	player := bot.Lavalink.ExistingPlayer(*event.GuildID())
 	if player == nil {
 		return event.CreateMessage(response.CreateWarn("No player exists"))
 	}
 
 	queueType := zeabot.LoopState(command.String("type"))
-	queue := data.Manager.Get(*event.GuildID())
+	queue := bot.Manager.Get(*event.GuildID())
 
 	queue.Mode = queueType
 

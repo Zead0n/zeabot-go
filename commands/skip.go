@@ -14,16 +14,16 @@ var skip = discord.SlashCommandCreate{
 	Description: "Skip current track",
 }
 
-func (data *botData) onSkip(
+func (bot *botData) onSkip(
 	_ discord.SlashCommandInteractionData,
 	event *handler.CommandEvent,
 ) error {
-	player := data.Lavalink.ExistingPlayer(*event.GuildID())
+	player := bot.Lavalink.ExistingPlayer(*event.GuildID())
 	if player == nil {
 		return event.CreateMessage(response.CreateWarn("No player exists"))
 	}
 
-	queue := data.Manager.Get(*event.GuildID())
+	queue := bot.Manager.Get(*event.GuildID())
 
 	nextTrack, _ := queue.Next()
 

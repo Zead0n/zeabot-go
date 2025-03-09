@@ -14,17 +14,17 @@ var leave = discord.SlashCommandCreate{
 	Description: "Leave voice channel",
 }
 
-func (data *botData) onLeave(
+func (bot *botData) onLeave(
 	command discord.SlashCommandInteractionData,
 	event *handler.CommandEvent,
 ) error {
-	data.Lavalink.RemovePlayer(*event.GuildID())
+	bot.Lavalink.RemovePlayer(*event.GuildID())
 
-	queue := data.Manager.Get(*event.GuildID())
+	queue := bot.Manager.Get(*event.GuildID())
 	queue.Clear()
 	queue.Mode = zeabot.LoopOff
 
-	if err := data.Discord.UpdateVoiceState(context.TODO(), *event.GuildID(), nil, false, false); err != nil {
+	if err := bot.Discord.UpdateVoiceState(context.TODO(), *event.GuildID(), nil, false, false); err != nil {
 		return event.CreateMessage(discord.MessageCreate{
 			Content: fmt.Sprintf("Error disconnecting: `%s`", err),
 		})

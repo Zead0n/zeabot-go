@@ -10,7 +10,7 @@ var ping = discord.SlashCommandCreate{
 	Description: "pong",
 }
 
-func (d *botData) onPing(
+func (b *botData) onPing(
 	command discord.SlashCommandInteractionData,
 	e *handler.CommandEvent,
 ) error {
