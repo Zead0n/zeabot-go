@@ -19,7 +19,7 @@ services:
       DISCORD_TOKEN: "*TOKEN*"
       LAVALINK_HOSTNAME: "lavalink"
       LAVALINK_PORT: "2333"
-      LAVALINK_PASSWORD: "youshallnotpass"
+      LAVALINK_PASSWORD: "change-me"
     networks:
       - zeabot
 
@@ -33,7 +33,7 @@ services:
       # Server config
       SERVER_PORT: "2333"
       SERVER_ADDRESS: "0.0.0.0"
-      LAVALINK_SERVER_PASSWORD: "youshallnotpass"
+      LAVALINK_SERVER_PASSWORD: "change-me"
       SERVER_HTTP2_ENABLED: "false"
 
       # youtube-source plugin
