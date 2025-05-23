@@ -38,4 +38,5 @@ func main() {
 	signal.Notify(s, syscall.SIGINT, syscall.SIGTERM)
 	<-s
 	slog.Info("Bot shutting down")
+	// Test
 }
