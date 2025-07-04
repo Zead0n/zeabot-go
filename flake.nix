@@ -25,7 +25,8 @@
 
       devShells = mapSystems ({ pkgs }:
         with pkgs; {
-          default = mkShell { packages = [ go gotools ]; };
+          default =
+            mkShell { packages = [ go gotools ffmpeg-headless yt-dlp ]; };
         });
     };
 }
