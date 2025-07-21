@@ -5,24 +5,13 @@
 
   outputs = { self, nixpkgs }:
     let
-      goVersion = 23;
-
       lib = nixpkgs.lib;
       systems =
         [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
       mapSystems = f:
-        lib.genAttrs systems (system:
-          f {
-            pkgs = import nixpkgs {
-              inherit system;
-              overlays = [ self.overlays.default ];
-            };
-          });
+        lib.genAttrs systems
+        (system: f { pkgs = import nixpkgs { inherit system; }; });
     in {
-      overlays.default = final: prev: {
-        go = final."go_1_${toString goVersion}";
-      };
-
       devShells = mapSystems ({ pkgs }:
         with pkgs; {
           default =
