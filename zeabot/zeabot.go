@@ -84,13 +84,17 @@ func NewZeabot() *Zeabot {
 }
 
 func (z *Zeabot) AddTracks(guildId snowflake.ID, tracks ...lavalink.Track) error {
-	var trackLimit []lavalink.Track
 	if len(tracks) <= 0 {
 		return errors.New("No tracks to queue")
-	} else if len(tracks) < 10 {
-		trackLimit = tracks[:]
-	} else if len(tracks) >= 10 { // NOTE: Limits the max loading to 10
+	}
+
+	var trackLimit []lavalink.Track
+	trackLength := len(tracks)
+	switch {
+	case trackLength >= 10: // NOTE: Limits the max loading to 10
 		trackLimit = tracks[:10]
+	default:
+		trackLimit = tracks[:]
 	}
 
 	player := z.Lavalink.Player(guildId)
