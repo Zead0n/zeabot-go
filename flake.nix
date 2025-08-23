@@ -14,8 +14,10 @@
     in {
       devShells = mapSystems ({ pkgs }:
         with pkgs; {
-          default =
-            mkShell { packages = [ go gotools ffmpeg-headless yt-dlp ]; };
+          default = mkShell {
+            packages = [ go gotools ffmpeg-headless yt-dlp jq ];
+            nativeBuildInputs = [ libopus pkg-config ];
+          };
         });
     };
 }
