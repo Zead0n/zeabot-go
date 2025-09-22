@@ -3,9 +3,9 @@ package music
 type LoopMode int8
 
 const (
-	Off LoopMode = iota
-	TrackLoop
-	QueueLoop
+	LoopOff LoopMode = iota
+	LoopTrack
+	LoopQueue
 )
 
 type (
