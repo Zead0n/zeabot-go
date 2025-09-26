@@ -16,7 +16,7 @@ func (qm *QueueManager) GetGuildQueue(guildId string) *Queue {
 	queue, ok := qm.queues[guildId]
 	if !ok {
 		queue = &Queue{
-			list:    make([]Track, 0),
+			tracks:  make([]YtdlpEntry, 0),
 			current: nil,
 			mode:    LoopOff,
 		}
@@ -27,7 +27,18 @@ func (qm *QueueManager) GetGuildQueue(guildId string) *Queue {
 }
 
 type Queue struct {
-	list    []Track
-	current *Track
+	tracks  []YtdlpEntry
+	current *YtdlpEntry
 	mode    LoopMode
+}
+
+func (q *Queue) Next() (*YtdlpEntry, bool) {
+	next := q.tracks[0]
+	q.tracks = q.tracks[1:]
+	return &next, true
+}
+
+func (q *Queue) Play(track *YtdlpEntry) bool {
+	q.current = track
+	return true
 }

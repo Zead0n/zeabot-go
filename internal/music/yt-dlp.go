@@ -20,7 +20,7 @@ type YtdlpEntry struct {
 	ChannelUrl string `json:"channel_url"`
 }
 
-func (ye *YtdlpEntry) FormatString() string {
+func (ye *YtdlpEntry) FormatDiscordString() string {
 	return fmt.Sprintf("[%s](<%s>) by [%s](<%s>)", ye.Title, ye.Url, ye.Channel, ye.ChannelUrl)
 }
 
@@ -34,7 +34,7 @@ type YtdlpResponse struct {
 	ChannelUrl string `json:"channel_url"`
 }
 
-func (yr *YtdlpResponse) toEntry() *YtdlpEntry {
+func (yr *YtdlpResponse) toEntry() YtdlpEntry {
 	var entry YtdlpEntry
 
 	entry.Thumbnail = ""
@@ -46,10 +46,10 @@ func (yr *YtdlpResponse) toEntry() *YtdlpEntry {
 	entry.Channel = yr.Channel
 	entry.ChannelUrl = yr.ChannelUrl
 
-	return &entry
+	return entry
 }
 
-func QueryYoutube(query string, search bool) ([]*YtdlpEntry, bool) {
+func QueryYoutube(query string, search bool) ([]YtdlpEntry, bool) {
 	var fixedQuery string
 	if search {
 		fixedQuery = fmt.Sprintf("ytsearch%d:%s", MAX_SEARCH_QUERIES, query)
@@ -67,7 +67,7 @@ func QueryYoutube(query string, search bool) ([]*YtdlpEntry, bool) {
 		return nil, false
 	}
 
-	var entries []*YtdlpEntry
+	var entries []YtdlpEntry
 	for _, line := range strings.Split(string(out), "\n") {
 		if len(line) <= 0 {
 			continue

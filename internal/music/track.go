@@ -1,6 +1,7 @@
 package music
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"strconv"
@@ -13,8 +14,20 @@ type Track struct {
 	thumbnail string
 }
 
-func (t *Track) Ffmpeg() *exec.Cmd {
-	return exec.Command("ffmpeg", "-i", t.media, "-f", "s16le", "-ar", strconv.Itoa(48_000), "-ac", strconv.Itoa(2), "pipe:1")
+func (t *Track) FfmpegCmd(ctx context.Context) *exec.Cmd {
+	return exec.CommandContext(
+		ctx,
+		"ffmpeg",
+		"-i",
+		t.media,
+		"-f",
+		"s16le",
+		"-ar",
+		strconv.Itoa(48_000),
+		"-ac",
+		strconv.Itoa(2),
+		"pipe:1",
+	)
 }
 
 func (t *Track) FormatString() string {
