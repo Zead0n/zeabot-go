@@ -1,35 +1,22 @@
 package music
 
 import (
-	"context"
 	"fmt"
 	"os/exec"
-	"strconv"
 )
 
 type Track struct {
-	media     string
-	url       string
-	title     string
-	thumbnail string
+	Thumbnail  string `json:"thumbnail"`
+	Title      string `json:"title"`
+	Url        string `json:"webpage_url"`
+	Channel    string `json:"channel"`
+	ChannelUrl string `json:"channel_url"`
 }
 
-func (t *Track) FfmpegCmd(ctx context.Context) *exec.Cmd {
-	return exec.CommandContext(
-		ctx,
-		"ffmpeg",
-		"-i",
-		t.media,
-		"-f",
-		"s16le",
-		"-ar",
-		strconv.Itoa(48_000),
-		"-ac",
-		strconv.Itoa(2),
-		"pipe:1",
-	)
+func (t *Track) FormatDiscordString() string {
+	return fmt.Sprintf("[%s](<%s>) by [%s](<%s>)", t.Title, t.Url, t.Channel, t.ChannelUrl)
 }
 
-func (t *Track) FormatString() string {
-	return fmt.Sprintf("[%s](<%s>)", t.title, t.url)
+func (t *Track) YtdlpCommand() *exec.Cmd {
+	return exec.Command("yt-dlp", "-f", "ba", "--no-playlist", "-o", "-", t.Url)
 }

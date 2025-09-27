@@ -12,18 +12,6 @@ import (
 
 const MAX_SEARCH_QUERIES = 5
 
-type YtdlpEntry struct {
-	Thumbnail  string `json:"thumbnail"`
-	Title      string `json:"title"`
-	Url        string `json:"webpage_url"`
-	Channel    string `json:"channel"`
-	ChannelUrl string `json:"channel_url"`
-}
-
-func (ye *YtdlpEntry) FormatDiscordString() string {
-	return fmt.Sprintf("[%s](<%s>) by [%s](<%s>)", ye.Title, ye.Url, ye.Channel, ye.ChannelUrl)
-}
-
 type YtdlpResponse struct {
 	Thumbnails []struct {
 		Url string `json:"url"`
@@ -34,8 +22,8 @@ type YtdlpResponse struct {
 	ChannelUrl string `json:"channel_url"`
 }
 
-func (yr *YtdlpResponse) toEntry() YtdlpEntry {
-	var entry YtdlpEntry
+func (yr *YtdlpResponse) toTrack() Track {
+	var entry Track
 
 	entry.Thumbnail = ""
 	if len(yr.Thumbnails) > 0 {
@@ -49,7 +37,7 @@ func (yr *YtdlpResponse) toEntry() YtdlpEntry {
 	return entry
 }
 
-func QueryYoutube(query string, search bool) ([]YtdlpEntry, bool) {
+func QueryYoutube(query string, search bool) ([]Track, bool) {
 	var fixedQuery string
 	if search {
 		fixedQuery = fmt.Sprintf("ytsearch%d:%s", MAX_SEARCH_QUERIES, query)
@@ -67,7 +55,7 @@ func QueryYoutube(query string, search bool) ([]YtdlpEntry, bool) {
 		return nil, false
 	}
 
-	var entries []YtdlpEntry
+	var entries []Track
 	for _, line := range strings.Split(string(out), "\n") {
 		if len(line) <= 0 {
 			continue
@@ -79,7 +67,7 @@ func QueryYoutube(query string, search bool) ([]YtdlpEntry, bool) {
 			continue
 		}
 
-		entries = append(entries, response.toEntry())
+		entries = append(entries, response.toTrack())
 	}
 
 	return entries, true
