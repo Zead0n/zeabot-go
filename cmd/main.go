@@ -15,6 +15,8 @@ func main() {
 		slog.Error("Failed to create bot", slog.Any("err", err))
 		return
 	}
+
+	zeabot.Init()
 	defer zeabot.Deinit()
 
 	deregister := commands.RegisterCommands(zeabot)
