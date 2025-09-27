@@ -1,6 +1,6 @@
 package music
 
-type LoopMode int8
+type LoopMode int
 
 const (
 	LoopOff LoopMode = iota
@@ -8,37 +8,29 @@ const (
 	LoopQueue
 )
 
-type QueueManager struct {
-	queues map[string]*Queue
-}
-
-func (qm *QueueManager) GetGuildQueue(guildId string) *Queue {
-	queue, ok := qm.queues[guildId]
-	if !ok {
-		queue = &Queue{
-			tracks:  make([]YtdlpEntry, 0),
-			current: nil,
-			mode:    LoopOff,
-		}
-		qm.queues[guildId] = queue
-	}
-
-	return queue
-}
-
 type Queue struct {
-	tracks  []YtdlpEntry
-	current *YtdlpEntry
+	Tracks  []Track
+	current *Track
 	mode    LoopMode
 }
 
-func (q *Queue) Next() (*YtdlpEntry, bool) {
-	next := q.tracks[0]
-	q.tracks = q.tracks[1:]
+func (q *Queue) dequeue() (*Track, bool) {
+	if len(q.Tracks) <= 0 {
+		return &Track{}, false
+	}
+
+	next := q.Tracks[0]
+	if len(q.Tracks) <= 1 {
+		q.Tracks = q.Tracks[1:]
+	} else {
+		q.Tracks = []Track{}
+	}
+
 	return &next, true
 }
 
-func (q *Queue) Play(track *YtdlpEntry) bool {
-	q.current = track
-	return true
+func (q *Queue) enqueue(tracks ...Track) {
+	for _, track := range tracks[:min(len(tracks), 10)] {
+		q.Tracks = append(q.Tracks, track)
+	}
 }
