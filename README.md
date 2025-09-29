@@ -1,3 +1,6 @@
+# NOTICE
+This project is going through a major rework.
+
 # zeabot-go
 A recreation of [zeabot-rs](https://github.com/Zead0n/zeabot-rs) written in go.
 
