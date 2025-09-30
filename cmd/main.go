@@ -31,23 +31,38 @@ func main() {
 	}
 	defer s.Close()
 
-	commands.RegisterCommands(s)
+	deregister := commands.RegisterCommands(s)
+	defer deregister()
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-stop
-
-	commands, err := s.ApplicationCommands(s.State.User.ID, "")
-	if err != nil {
-		slog.Error(fmt.Sprintf("Failed to retrieve commands: %v", err))
-		return
-	}
-
-	for _, command := range commands {
-		err = s.ApplicationCommandDelete(s.State.User.ID, "", command.ID)
-		if err != nil {
-			slog.Error(fmt.Sprintf("Failed to deregister '%v' command: %v", command.Name, err))
-			continue
-		}
-	}
 }
+
+// func onVoiceStateUpdate(s *discordgo.Session, event *discordgo.VoiceStateUpdate) {
+// 	vc, ok := s.VoiceConnections[event.GuildID]
+// 	if !ok {
+// 		return
+// 	}
+//
+// 	guild, err := s.Guild(vc.GuildID)
+// 	if err != nil {
+// 		slog.Error("Could not get guild on VoiceStateUpdate", slog.Any("err", err))
+// 		return
+// 	}
+//
+// 	var channelMembers []*discordgo.Member
+// 	for _, state := range guild.VoiceStates {
+// 		if state.ChannelID == vc.ChannelID && state.UserID != s.State.User.ID {
+// 			channelMembers = append(channelMembers, state.Member)
+// 		}
+// 	}
+//
+// 	if len(channelMembers) > 1 {
+// 		return
+// 	}
+//
+// 	if err = vc.Disconnect(); err != nil {
+// 		slog.Error("Failed to disconnect")
+// 	}
+// }
