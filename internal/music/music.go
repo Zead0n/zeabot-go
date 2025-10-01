@@ -14,14 +14,10 @@ func (mm *MusicManager) Get(guildId string) *Music {
 	music, ok := mm.musics[guildId]
 	if !ok {
 		music = &Music{
-			player: Player{
-				state: PlayerStateEnded,
-			},
-			queue: Queue{
-				Tracks:  make([]Track, 0),
-				current: &Track{},
-				mode:    LoopOff,
-			},
+			state:   PlayerStateEnded,
+			queue:   make([]Track, 0),
+			current: nil,
+			mode:    LoopOff,
 		}
 
 		mm.musics[guildId] = music
@@ -35,6 +31,29 @@ func (mm *MusicManager) Delete(guildId string) {
 }
 
 type Music struct {
-	player Player
-	queue  Queue
+	state   PlayerState
+	queue   []Track
+	current *Track
+	mode    LoopMode
+}
+
+func (m *Music) dequeue() (*Track, bool) {
+	if len(m.queue) <= 0 {
+		return &Track{}, false
+	}
+
+	next := m.queue[0]
+	if len(m.queue) <= 1 {
+		m.queue = m.queue[1:]
+	} else {
+		m.queue = []Track{}
+	}
+
+	return &next, true
+}
+
+func (m *Music) enqueue(tracks ...Track) {
+	for _, track := range tracks[:min(len(tracks), 10)] {
+		m.queue = append(m.queue, track)
+	}
 }
