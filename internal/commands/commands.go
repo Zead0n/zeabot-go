@@ -14,7 +14,7 @@ type data struct {
 
 var d *data = &data{music.NewMusicManager()}
 
-var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate){
+var commandHandlers = map[string]func(s *discordgo.Session, i *discordgo.InteractionCreate) error{
 	joinName:  d.onJoinCommand,
 	leaveName: d.onLeaveCommand,
 	pingName:  d.onPingCommand,
@@ -34,8 +34,12 @@ func RegisterCommands(s *discordgo.Session) func() {
 			return
 		}
 
-		if h, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
-			h(s, i)
+		commandName := i.ApplicationCommandData().Name
+		if h, ok := commandHandlers[commandName]; ok {
+			if err := h(s, i); err != nil {
+				slog.Error(fmt.Sprintf("Error handling command '%s': %s", commandName, err.Error()))
+			}
+
 		}
 	})
 

@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"log/slog"
 	"regexp"
 
 	"github.com/bwmarrin/discordgo"
@@ -26,22 +25,20 @@ var urlPattern = regexp.MustCompile(
 	"^https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]?",
 )
 
-func (d *data) onPlayCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func (d *data) onPlayCommand(s *discordgo.Session, i *discordgo.InteractionCreate) error {
 	_, err := assertVoiceConnection(s, i)
 	if err != nil {
 		if err.Error() != "Different channel" {
-			slog.Error("Error asserting voice connection: ", slog.Any("err", err))
-			return
+			return err
 		}
 
-		if err := s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		return s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "Already in a voice channel",
 			},
-		}); err != nil {
-			slog.Error("Failed to send joined message: ", slog.Any("err", err))
-			return
-		}
+		})
 	}
+
+	return nil
 }

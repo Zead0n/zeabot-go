@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"log/slog"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -13,19 +11,15 @@ var joinCommand = &discordgo.ApplicationCommand{
 	Description: "Just a pong",
 }
 
-func (d *data) onJoinCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
+func (d *data) onJoinCommand(s *discordgo.Session, i *discordgo.InteractionCreate) error {
 	g, err := s.State.Guild(i.GuildID)
 	if err != nil {
-		if err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		return s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "ERROR",
 			},
-		}); err != nil {
-			slog.Error("Failed to send joined message: ", slog.Any("err", err))
-		}
-		slog.Error("Failed to guild: ", slog.Any("err", err))
-		return
+		})
 	}
 
 	authorVoiceChannelId := ""
@@ -37,30 +31,22 @@ func (d *data) onJoinCommand(s *discordgo.Session, i *discordgo.InteractionCreat
 	}
 
 	if authorVoiceChannelId == "" {
-		if err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+		return s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
 			Data: &discordgo.InteractionResponseData{
 				Content: "Couldn't find your voice channel",
 			},
-		}); err != nil {
-			slog.Error("Failed to send joined message: ", slog.Any("err", err))
-			return
-		}
-		return
+		})
 	}
 
 	if _, err = s.ChannelVoiceJoin(i.GuildID, authorVoiceChannelId, false, true); err != nil {
-		slog.Error("Failed to join voice channel: ", slog.Any("err", err))
-		return
+		return err
 	}
 
-	if err = s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
+	return s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content: "joined",
 		},
-	}); err != nil {
-		slog.Error("Failed to send joined message: ", slog.Any("err", err))
-		return
-	}
+	})
 }
