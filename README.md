@@ -19,10 +19,10 @@ services:
     depends_on:
       - lavalink
     environment:
-      DISCORD_TOKEN: "*TOKEN*"
+      DISCORD_TOKEN: "TOKEN"
       LAVALINK_HOSTNAME: "lavalink"
       LAVALINK_PORT: "2333"
-      LAVALINK_PASSWORD: "change-me"
+      LAVALINK_PASSWORD: "CHANGE_ME"
     networks:
       - zeabot
 
@@ -36,11 +36,12 @@ services:
       # Server config
       SERVER_PORT: "2333"
       SERVER_ADDRESS: "0.0.0.0"
-      LAVALINK_SERVER_PASSWORD: "change-me"
+      LAVALINK_SERVER_PASSWORD: "CHANGE_ME"
       SERVER_HTTP2_ENABLED: "false"
 
       # youtube-source plugin
-      LAVALINK_PLUGINS_0_DEPENDENCY: "dev.lavalink.youtube:youtube-plugin:1.11.5"
+      # Replace 'VERSION' with the actual version you wish to use. refer to https://github.com/lavalink-devs/youtube-source/releases
+      LAVALINK_PLUGINS_0_DEPENDENCY: "dev.lavalink.youtube:youtube-plugin:VERSION"
       LAVALINK_PLUGINS_0_REPOSITORY: "https://maven.lavalink.dev/releases"
       LAVALINK_PLUGINS_0_SNAPSHOT: "false"
       PLUGINS_YOUTUBE_ENABLED: "true"
